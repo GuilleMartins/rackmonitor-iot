@@ -1,0 +1,157 @@
+# =====================================================
+# VISTA HTML DASHBOARD
+# =====================================================
+HTML_CONTENT = """
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RackMonitor IoT 2.0 - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen p-8 font-sans">
+    <div class="max-w-5xl mx-auto space-y-6">
+        <header class="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-700 pb-4 gap-4">
+            <div>
+                <h1 class="text-3xl font-bold tracking-tight text-blue-400">RackMonitor IoT 2.0</h1>
+                <p class="text-slate-400 text-sm">Monitoreo Ambiental e Intrusión en Tiempo Real</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/api/v1/telemetry/export-csv" 
+                   class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-blue-400 border border-slate-600 rounded-lg text-sm font-semibold transition flex items-center gap-2 shadow">
+                    📥 Exportar CSV
+                </a>
+                <div id="status-badge" class="px-4 py-2 rounded-full text-sm font-bold bg-slate-800 text-slate-300">
+                    ESPERANDO DATOS...
+                </div>
+            </div>
+        </header>
+
+        <main class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <p class="text-slate-400 text-sm font-medium">Temperatura</p>
+                <div class="flex items-baseline mt-2">
+                    <span id="temp-val" class="text-4xl font-extrabold text-amber-400">--</span>
+                    <span class="text-xl text-slate-400 ml-1">°C</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <p class="text-slate-400 text-sm font-medium">Humedad</p>
+                <div class="flex items-baseline mt-2">
+                    <span id="hum-val" class="text-4xl font-extrabold text-blue-400">--</span>
+                    <span class="text-xl text-slate-400 ml-1">%</span>
+                </div>
+            </div>
+
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+                <p class="text-slate-400 text-sm font-medium">Sensor PIR (Movimiento)</p>
+                <div class="mt-2">
+                    <span id="motion-val" class="text-2xl font-bold text-slate-300">--</span>
+                </div>
+            </div>
+        </main>
+
+        <section class="bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-lg">
+            <h2 class="text-lg font-bold text-slate-300 mb-4">Tendencia Ambiental (Últimas lecturas)</h2>
+            <div class="relative h-72 w-full">
+                <canvas id="telemetryChart"></canvas>
+            </div>
+        </section>
+
+        <footer class="text-center text-xs text-slate-500">
+            Última actualización: <span id="last-update">Nunca</span>
+        </footer>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('telemetryChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [
+                    {
+                        label: 'Temperatura (°C)',
+                        data: [],
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    },
+                    {
+                        label: 'Humedad (%)',
+                        data: [],
+                        borderColor: '#60a5fa',
+                        backgroundColor: 'rgba(96, 165, 250, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.3,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                    y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+                },
+                plugins: { legend: { labels: { color: '#f8fafc' } } }
+            }
+        });
+
+        async function fetchHistory() {
+            try {
+                const res = await fetch('/api/v1/telemetry/history');
+                if (!res.ok) return;
+                const history = await res.json();
+                
+                if (history.length > 0) {
+                    const latest = history[history.length - 1];
+                    updateUI(latest);
+                    updateChart(history);
+                }
+            } catch (err) {
+                console.error("Error al obtener historial:", err);
+            }
+        }
+
+        function updateUI(data) {
+            document.getElementById('temp-val').innerText = Number(data.temperature).toFixed(1);
+            document.getElementById('hum-val').innerText = Number(data.humidity).toFixed(1);
+            
+            const motionElem = document.getElementById('motion-val');
+            motionElem.innerText = data.motion ? "DETECTADO" : "NORMAL";
+            motionElem.className = data.motion ? "text-2xl font-bold text-red-500 animate-pulse" : "text-2xl font-bold text-emerald-400";
+
+            const badge = document.getElementById('status-badge');
+            badge.innerText = data.status;
+
+            if (data.status === 'CRITICO') {
+                badge.className = "px-4 py-2 rounded-full text-sm font-bold bg-red-600 text-white animate-bounce";
+            } else if (data.status === 'ADVERTENCIA') {
+                badge.className = "px-4 py-2 rounded-full text-sm font-bold bg-amber-500 text-black";
+            } else {
+                badge.className = "px-4 py-2 rounded-full text-sm font-bold bg-emerald-500 text-slate-950";
+            }
+
+            document.getElementById('last-update').innerText = data.timestamp;
+        }
+
+        function updateChart(history) {
+            chart.data.labels = history.map(item => item.timestamp.split(' ')[1]);
+            chart.data.datasets[0].data = history.map(item => item.temperature);
+            chart.data.datasets[1].data = history.map(item => item.humidity);
+            chart.update();
+        }
+
+        setInterval(fetchHistory, 1500);
+        fetchHistory();
+    </script>
+</body>
+</html>
+"""
