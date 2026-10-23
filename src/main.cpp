@@ -42,7 +42,10 @@ Adafruit_SSD1306 display(
     &Wire,
     -1
 );
-
+const char* WIFI_SSID = "TIC-SSD";
+const char* WIFI_PASSWORD = "L3gion935!!";
+const char* API_URL =
+  "http://192.168.40.94:8000/api/v1/telemetry";
 
 // =====================================================
 // SENSOR DHT

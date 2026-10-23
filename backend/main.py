@@ -280,7 +280,7 @@ async function fetchHistoryAndForecast() {
             chart.update();
         }
 
-        setInterval(fetchHistoryAndForecast, 1500);
+        setInterval(fetchHistoryAndForecast, 1000);
         fetchHistoryAndForecast();
     </script>
 </body>
