@@ -3,3 +3,8 @@ uvicorn[standard]
 pydantic
 sqlalchemy
 psycopg2-binary
+include/secrets.h
+backend/.env
+.env
+.env.*
+!.env.example

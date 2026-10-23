@@ -11,6 +11,7 @@ from email.mime.multipart import MIMEMultipart
 import csv
 import io
 
+
 # Módulos de Base de Datos
 import models
 from database import engine, get_db
@@ -21,11 +22,18 @@ models.Base.metadata.create_all(bind=engine)
 # =====================================================
 # CONFIGURACIÓN DE CORREO SMTP
 # =====================================================
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+SENDER_EMAIL = os.getenv("SENDER_EMAIL")
+SENDER_PASSWORD = os.getenv("SENDER_PASSWORD")
+RECIPIENT_EMAIL = os.getenv("RECIPIENT_EMAIL")
+
 SMTP_SERVER = "smtp.gmail.com"
 SMTP_PORT = 587
-SENDER_EMAIL = "alertasdashboard050@gmail.com"
-SENDER_PASSWORD = "xhwomxhbdregrurl"  # Contraseña de aplicación de 16 caracteres
-RECIPIENT_EMAIL = "guilleaugustomartins@gmail.com"
+
 
 LAST_EMAIL_SENT = None
 EMAIL_COOLDOWN_MINUTES = 5

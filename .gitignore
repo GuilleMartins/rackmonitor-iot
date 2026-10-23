@@ -18,3 +18,14 @@ __pycache__/
 # PlatformIO / ESP32
 .pio/
 .vscode/
+# Credenciales privadas
+include/secrets.h
+backend/.env
+.env
+.env.*
+!.env.example
+
+# Archivos temporales
+.pio/
+__pycache__/
+*.pyc

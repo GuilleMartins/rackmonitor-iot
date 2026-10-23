@@ -1,26 +1,55 @@
-# RackMonitor IoT 2.0 
+# RackMonitor IoT 2.0
 
-Sistema integral de monitoreo ambiental, seguridad física y analítica predictiva diseñado para gabinetes y racks de servidores en centros de datos.
+**Sistema de monitoreo ambiental y detección de movimiento en tiempo real para racks de servidores.**
 
-## Características Principales
+Proyecto académico desarrollado en la Universidad del Norte, carrera de Ingeniería Informática, décimo semestre, asignatura Robótica.
 
-* **Monitoreo en Tiempo Real:** Lectura continua de temperatura, humedad (sensor DHT22) y detección de intrusión (sensor PIR) a través de un microcontrolador ESP32.
-* **Analítica Predictiva (Forecasting):** Algoritmos de regresión sobre series temporales para proyectar tendencias a corto plazo y prevenir sobrecalentamientos.
-* **Alertas Multicanal:** Notificaciones automáticas de estados críticos vía correo electrónico (SMTP) y Telegram Bot.
-* **Dashboard Interactivo:** Panel web dinámico para visualización de métricas en tiempo real y gráficos de proyección.
-* **Exportación de Historial:** Generación de reportes de telemetría en formato CSV.
+## Integrantes
 
-## Stack Tecnológico
+- Gabriela Vasso
+- Helen Dure
+- Guillermo Martins
 
-* **Hardware & Firmware:** ESP32, Sensores DHT22/PIR, C++, PlatformIO.
-* **Backend:** Python 3.11+, FastAPI, Uvicorn, SQLAlchemy (SQLite/PostgreSQL).
-* **Data Science & Analítica:** NumPy, Scikit-Learn, Pandas.
-* **Frontend:** HTML5, Tailwind CSS, Chart.js.
+**Docente:** Ing. Richard Núñez
+**Año:** 2026
 
-## Equipo del Proyecto
+## Prototipo físico implementado
 
-Proyecto Integrador desarrollado en la Universidad del Norte:
-* **Guillermo Martins** - Backend & Forecasting
-* **Helen Duré** - Frontend & Dashboard
-* **Gabriela Vasso** - Integración de Hardware y Firmware ESP32
-* **Tutor:** Ing. Richard Nuñez
+El sistema utiliza un microcontrolador ESP32 DevKit V1, un sensor DHT11 para medir temperatura y humedad, y un sensor PIR HC-SR501 para detectar movimiento.
+
+Los datos se transmiten mediante Wi-Fi a un backend desarrollado en Python con FastAPI.
+
+## Funcionalidades implementadas
+
+- Lectura de temperatura y humedad.
+- Detección de movimiento.
+- Transmisión de telemetría mediante HTTP.
+- Visualización de datos en un dashboard web.
+- Clasificación de estados NORMAL, ADVERTENCIA y CRÍTICO.
+- Gráficos históricos y proyección de temperatura.
+- Registro de eventos.
+- Opción de exportación de datos en CSV.
+
+## Funcionalidades adicionales y pendientes de validación
+
+El proyecto contiene código relacionado con alertas por correo electrónico, pantalla OLED, indicadores LED y buzzer. Estas funciones requieren validación o instalación física según corresponda.
+
+La integración con Telegram no se considera una funcionalidad demostrada en esta versión.
+
+## Conexiones principales
+
+| Componente | Conexión ESP32 |
+|---|---|
+| DHT11 DATA | GPIO4 |
+| PIR OUT | GPIO27 |
+| DHT11 VCC | 3V3 |
+| PIR VCC | VIN (5 V USB) |
+| GND | GND común |
+
+## Evidencia de funcionamiento
+
+Se verificó la recepción exitosa de telemetría mediante respuestas HTTP 200 y la visualización de mediciones y estados de alerta en el dashboard.
+
+## Repositorio
+
+https://github.com/GuilleMartins/rackmonitor-iot

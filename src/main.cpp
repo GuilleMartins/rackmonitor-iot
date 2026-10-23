@@ -3,6 +3,7 @@
 #include <DHT.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include "secrets.h"
 
 // =====================================================
 // RACKMONITOR IoT 2.0
@@ -42,8 +43,8 @@ Adafruit_SSD1306 display(
     &Wire,
     -1
 );
-const char* WIFI_SSID = "TIC-SSD";
-const char* WIFI_PASSWORD = "L3gion935!!";
+const char* WIFI_SSID = WIFI_SSID_PRIVATE;
+const char* WIFI_PASSWORD = WIFI_PASSWORD_PRIVATE;
 const char* API_URL =
   "http://192.168.40.94:8000/api/v1/telemetry";
 
